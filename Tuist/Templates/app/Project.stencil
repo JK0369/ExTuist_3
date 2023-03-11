@@ -1,0 +1,67 @@
+import ProjectDescription
+
+// Project+Extension
+extension Project {
+    public static func app(
+        name: String,
+        platform: Platform,
+        bundleID: String,
+        dependencies: [TargetDependency] = []
+    ) -> Project {
+        return self.project(
+            name: name,
+            product: .app,
+            bundleID: bundleID,
+            platform: platform,
+            dependencies: dependencies,
+            infoPlist: [
+                "CFBundleShortVersionString": "1.0",
+                "CFBundleVersion": "1",
+                "UILaunchStoryboardName": "LaunchScreen"
+            ]
+        )
+    }
+    
+    public static func framework(
+        name: String,
+        platform: Platform,
+        bundleID: String,
+        dependencies: [TargetDependency] = []
+    ) -> Project {
+        return self.project(
+            name: name,
+            product: .framework,
+            bundleID: bundleID,
+            platform: platform,
+            dependencies: dependencies
+        )
+    }
+    
+    public static func project(
+        name: String,
+        product: Product,
+        bundleID: String,
+        platform: Platform,
+        dependencies: [TargetDependency] = [],
+        infoPlist: [String: InfoPlist.Value] = [:]
+    ) -> Project {
+        return Project(
+            name: name,
+            targets: [
+                Target(
+                    name: name,
+                    platform: platform,
+                    product: product,
+                    bundleId: bundleID,
+                    infoPlist: .extendingDefault(with: infoPlist),
+                    sources: ["Sources/**"], // Sources/**누락 시 .swift 파일 수동으로 add files해야 추가됨
+                    resources: ["Sources/**"], // Sources/**누락 시 LaunchScreen.storyboard 파일 수동으로 add files해야 추가됨
+                    dependencies: dependencies
+                )
+            ]
+        )
+    }
+}
+
+// Template: Project.swift 
+let project = Project.app(name: "{{ name }}", platform: .iOS, bundleID: "com.jake.{{ name }}")
